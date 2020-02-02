@@ -39,6 +39,8 @@ features = [
   'Document',
   'Element',
   'HtmlElement',
+  'HtmlCanvasElement',
+  'CanvasRenderingContext2d',
   'Node',
   'Window',
 ]

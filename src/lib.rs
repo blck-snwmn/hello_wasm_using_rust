@@ -1,5 +1,5 @@
 use wasm_bindgen::prelude::*;
-use web_sys::console;
+use wasm_bindgen::JsCast;
 
 // When the `wee_alloc` feature is enabled, this uses `wee_alloc` as the global
 // allocator.
@@ -24,6 +24,18 @@ pub fn main_js() -> Result<(), JsValue> {
     let elem = document.create_element("h1")?;
     elem.set_inner_html("Hello WASM from Rust!");
     body.append_child(&elem)?;
+
+    let canvas = document.create_element("canvas")?;
+    let canvas = canvas.dyn_into::<web_sys::HtmlCanvasElement>()?;
+    canvas.set_width(1000);
+    canvas.set_height(1000);
+    body.append_child(&canvas)?;
+
+    let ctx = canvas.get_context("2d")?.expect("canvas should get 2D ctx");
+    let ctx = ctx.dyn_into::<web_sys::CanvasRenderingContext2d>()?;
+    ctx.begin_path();
+    ctx.stroke_rect(75.0, 140.0, 150.0, 110.0);
+    ctx.stroke();
 
     Ok(())
 }
