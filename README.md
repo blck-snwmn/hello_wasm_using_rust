@@ -1,3 +1,5 @@
+using rust-webpack
+
 ## How to install
 
 ```sh
