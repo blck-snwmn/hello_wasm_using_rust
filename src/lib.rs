@@ -1,3 +1,4 @@
+use std::f64;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
@@ -37,8 +38,20 @@ pub fn main_js() -> Result<(), JsValue> {
     let ctx = canvas.get_context("2d")?.expect("canvas should get 2D ctx");
     let ctx = ctx.dyn_into::<web_sys::CanvasRenderingContext2d>()?;
     // draw
+    // foundation
+    ctx.stroke_rect(100.0, 400.0, 400.0, 100.0);
+    // snowball
     ctx.begin_path();
-    ctx.stroke_rect(75.0, 140.0, 150.0, 110.0);
+    ctx.arc(300.0, 300.0, 100.0, 0.0, f64::consts::PI * 2.0)?;
+    ctx.stroke();
+    ctx.begin_path();
+    ctx.arc(300.0, 120.0, 80.0, 0.0, f64::consts::PI * 2.0)?;
+    ctx.stroke();
+    ctx.begin_path();
+    ctx.move_to(300.0, 130.0);
+    ctx.line_to(240.0, 140.0);
+    ctx.line_to(300.0, 150.0);
+    ctx.close_path();
     ctx.stroke();
 
     Ok(())
