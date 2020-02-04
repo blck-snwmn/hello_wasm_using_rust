@@ -23,8 +23,7 @@ pub fn main_js() -> Result<(), JsValue> {
     let body = document.body().expect("document should have a body");
 
     // hello !
-    let elem = document.create_element("h1")?;
-    elem.set_inner_html("Hello WASM from Rust!");
+    let elem = create_greeting_element(&document)?;
     body.append_child(&elem)?;
 
     // draw on canvas
@@ -33,8 +32,6 @@ pub fn main_js() -> Result<(), JsValue> {
     let canvas = canvas.dyn_into::<web_sys::HtmlCanvasElement>()?;
     canvas.set_width(1000);
     canvas.set_height(1000);
-    body.append_child(&canvas)?;
-
     let ctx = canvas.get_context("2d")?.expect("canvas should get 2D ctx");
     let ctx = ctx.dyn_into::<web_sys::CanvasRenderingContext2d>()?;
     // draw
@@ -53,6 +50,13 @@ pub fn main_js() -> Result<(), JsValue> {
     ctx.line_to(300.0, 150.0);
     ctx.close_path();
     ctx.stroke();
+    body.append_child(&canvas)?;
 
     Ok(())
+}
+
+fn create_greeting_element(document: &web_sys::Document) -> Result<web_sys::Element, JsValue> {
+    let elem = document.create_element("h1")?;
+    elem.set_inner_html("Hello WASM from Rust!");
+    return Ok(elem);
 }
