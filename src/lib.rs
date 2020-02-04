@@ -28,6 +28,19 @@ pub fn main_js() -> Result<(), JsValue> {
 
     // draw on canvas
     // add canvas
+    let canvas = create_canvas(&document)?;
+    body.append_child(&canvas)?;
+
+    Ok(())
+}
+
+fn create_greeting_element(document: &web_sys::Document) -> Result<web_sys::Element, JsValue> {
+    let elem = document.create_element("h1")?;
+    elem.set_inner_html("Hello WASM from Rust!");
+    return Ok(elem);
+}
+
+fn create_canvas(document: &web_sys::Document) -> Result<web_sys::HtmlCanvasElement, JsValue> {
     let canvas = document.create_element("canvas")?;
     let canvas = canvas.dyn_into::<web_sys::HtmlCanvasElement>()?;
     canvas.set_width(1000);
@@ -50,13 +63,6 @@ pub fn main_js() -> Result<(), JsValue> {
     ctx.line_to(300.0, 150.0);
     ctx.close_path();
     ctx.stroke();
-    body.append_child(&canvas)?;
 
-    Ok(())
-}
-
-fn create_greeting_element(document: &web_sys::Document) -> Result<web_sys::Element, JsValue> {
-    let elem = document.create_element("h1")?;
-    elem.set_inner_html("Hello WASM from Rust!");
-    return Ok(elem);
+    Ok(canvas)
 }
