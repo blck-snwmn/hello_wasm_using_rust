@@ -31,6 +31,9 @@ pub fn main_js() -> Result<(), JsValue> {
     let canvas = create_canvas(&document)?;
     body.append_child(&canvas)?;
 
+    let svg = create_svg(&document)?;
+    body.append_child(&svg)?;
+
     Ok(())
 }
 
@@ -65,4 +68,28 @@ fn create_canvas(document: &web_sys::Document) -> Result<web_sys::HtmlCanvasElem
     ctx.stroke();
 
     Ok(canvas)
+}
+
+fn create_svg(document: &web_sys::Document) -> Result<web_sys::SvgElement, JsValue> {
+    let svg = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "svg")?;
+    let svg = svg.dyn_into::<web_sys::SvgElement>()?;
+    svg.set_attribute("width", "600")?;
+    svg.set_attribute("hight", "600")?;
+
+    // draw circle
+    let circle = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "circle")?;
+    let circle = circle.dyn_into::<web_sys::SvgElement>()?;
+    circle.set_attribute("r", "100")?;
+    circle.set_attribute("fill", "blue")?;
+    svg.append_child(&circle)?;
+
+    // draw txt
+    let txt = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "text")?;
+    let txt = txt.dyn_into::<web_sys::SvgElement>()?;
+    txt.set_text_content(Some("test"));
+    txt.set_attribute("x", "100")?;
+    txt.set_attribute("y", "100")?;
+    svg.append_child(&txt)?;
+
+    Ok(svg)
 }

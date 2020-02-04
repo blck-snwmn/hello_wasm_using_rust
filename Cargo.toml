@@ -41,6 +41,7 @@ features = [
   'HtmlElement',
   'HtmlCanvasElement',
   'CanvasRenderingContext2d',
+  'SvgElement',
   'Node',
   'Window',
 ]
