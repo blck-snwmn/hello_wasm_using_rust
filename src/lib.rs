@@ -43,8 +43,8 @@ fn create_greeting_element(document: &web_sys::Document) -> Result<web_sys::Elem
 fn create_canvas(document: &web_sys::Document) -> Result<web_sys::HtmlCanvasElement, JsValue> {
     let canvas = document.create_element("canvas")?;
     let canvas = canvas.dyn_into::<web_sys::HtmlCanvasElement>()?;
-    canvas.set_width(1000);
-    canvas.set_height(1000);
+    canvas.set_width(600);
+    canvas.set_height(600);
     let ctx = canvas.get_context("2d")?.expect("canvas should get 2D ctx");
     let ctx = ctx.dyn_into::<web_sys::CanvasRenderingContext2d>()?;
     // draw
