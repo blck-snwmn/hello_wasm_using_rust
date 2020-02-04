@@ -1,7 +1,6 @@
 use std::f64;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-
 // When the `wee_alloc` feature is enabled, this uses `wee_alloc` as the global
 // allocator.
 //
@@ -33,6 +32,9 @@ pub fn main_js() -> Result<(), JsValue> {
 
     let svg = create_svg(&document)?;
     body.append_child(&svg)?;
+
+    let drawer = create_draw_canvas(&document)?;
+    body.append_child(&drawer)?;
 
     Ok(())
 }
@@ -92,4 +94,29 @@ fn create_svg(document: &web_sys::Document) -> Result<web_sys::SvgElement, JsVal
     svg.append_child(&txt)?;
 
     Ok(svg)
+}
+
+fn create_draw_canvas(document: &web_sys::Document) -> Result<web_sys::HtmlCanvasElement, JsValue> {
+    let canvas = document
+        .create_element("canvas")?
+        .dyn_into::<web_sys::HtmlCanvasElement>()?;
+    canvas.set_width(600);
+    canvas.set_height(600);
+    let ctx = canvas
+        .get_context("2d")?
+        .expect("canvas should get 2D ctx")
+        .dyn_into::<web_sys::CanvasRenderingContext2d>()?;
+
+    // see https://github.com/rustwasm/wasm-bindgen/blob/master/examples/paint/src/lib.rs
+    let closure = Closure::wrap(Box::new(move |event: web_sys::MouseEvent| {
+        ctx.stroke_rect(
+            event.offset_x() as f64 - 5.0,
+            event.offset_y() as f64 - 5.0,
+            10.0,
+            10.0,
+        );
+    }) as Box<dyn FnMut(_)>);
+    canvas.add_event_listener_with_callback("mousedown", closure.as_ref().unchecked_ref())?;
+    closure.forget();
+    Ok(canvas)
 }
