@@ -1,4 +1,6 @@
+use std::cell::Cell;
 use std::f64;
+use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 // When the `wee_alloc` feature is enabled, this uses `wee_alloc` as the global
@@ -35,6 +37,36 @@ pub fn main_js() -> Result<(), JsValue> {
 
     let drawer = create_draw_canvas(&document)?;
     body.append_child(&drawer)?;
+
+    // draw in svg
+    // TODO rewrite.
+    let svg = document.create_element_ns(Some("http://www.w3.org/2000/svg"), "svg")?;
+    let svg = svg.dyn_into::<web_sys::SvgElement>()?;
+    svg.set_attribute("width", "600")?;
+    svg.set_attribute("hight", "600")?;
+    body.append_child(&svg)?;
+    let svg_rc = Rc::new(svg);
+    let svg_in_closer = svg_rc.clone();
+    let svg2 = svg_rc.clone();
+    let closure = Closure::wrap(Box::new(move |event: web_sys::MouseEvent| {
+        // draw circle
+        let circle = document
+            .create_element_ns(Some("http://www.w3.org/2000/svg"), "circle")
+            .unwrap()
+            .dyn_into::<web_sys::SvgElement>()
+            .unwrap();
+        circle.set_attribute("r", "10").unwrap();
+        circle
+            .set_attribute("cx", &event.offset_x().to_string())
+            .unwrap();
+        circle
+            .set_attribute("cy", &event.offset_y().to_string())
+            .unwrap();
+        circle.set_attribute("fill", "blue").unwrap();
+        svg_in_closer.append_child(&circle).unwrap();
+    }) as Box<dyn FnMut(_)>);
+    svg2.add_event_listener_with_callback("mousedown", closure.as_ref().unchecked_ref())?;
+    closure.forget();
 
     Ok(())
 }
